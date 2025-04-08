@@ -13,7 +13,7 @@ app.use("/outputs", express.static(path.join(__dirname, "public/outputs")));
 
 // Routes
 app.use("/api/social", require("./routes/social.routes"));
-
+app.use("/api/youtube", require("./routes/yt.routes"));
 // Health check
 app.get("/", (req, res) => {
   res.send("Ultra Pro Backend is Live!");
