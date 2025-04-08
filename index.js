@@ -1,28 +1,25 @@
-const express = require('express');
-const mongoose = require('mongoose');
-const bodyParser = require('body-parser');
-const dotenv = require('dotenv');
-const socialRoutes = require('./routes/social.routes');
-
-dotenv.config();
-
+const express = require("express");
+const cors = require("cors");
 const app = express();
-const PORT = process.env.PORT || 5000;
+const path = require("path");
+require("dotenv").config();
 
-// Middleware
-app.use(bodyParser.json());
+app.use(cors());
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+// Static folder for outputs
+app.use("/outputs", express.static(path.join(__dirname, "public/outputs")));
 
 // Routes
-app.use('/api/social', socialRoutes);
+app.use("/api/social", require("./routes/social.routes"));
 
-// MongoDB Connection
-mongoose.connect(process.env.MONGO_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-})
-.then(() => console.log('MongoDB connected successfully'))
-.catch(err => console.error('MongoDB connection error:', err));
+// Health check
+app.get("/", (req, res) => {
+  res.send("Ultra Pro Backend is Live!");
+});
 
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+  console.log(`Server running on http://localhost:${PORT}`);
 });
