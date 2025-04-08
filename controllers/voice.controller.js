@@ -1,31 +1,37 @@
 const fs = require("fs");
 const path = require("path");
-const { exec } = require("child_process");
 const { detectSongAndSinger, transformVoiceAI } = require("../services/voice-ai.service");
 
 exports.transformVoice = async (req, res) => {
-  if (!req.file) {
-    return res.status(400).json({ success: false, message: "No audio file uploaded." });
-  }
-
-  const tempInputPath = path.join(__dirname, "../temp", `${Date.now()}-input.wav`);
-  fs.writeFileSync(tempInputPath, req.file.buffer);
-
   try {
-    const { songTitle, detectedSinger } = await detectSongAndSinger(tempInputPath);
-    const outputPath = await transformVoiceAI(tempInputPath, detectedSinger);
+    const audioFile = req.file;
 
-    res.json({
+    if (!audioFile) {
+      return res.status(400).json({ success: false, message: "No audio file uploaded." });
+    }
+
+    // Save the uploaded buffer to temp file
+    const tempPath = path.join(__dirname, "../temp", `${Date.now()}-input.wav`);
+    fs.writeFileSync(tempPath, audioFile.buffer);
+
+    // Step 1: Detect song and singer using AI model
+    const { songTitle, detectedSinger } = await detectSongAndSinger(tempPath);
+
+    // Step 2: Transform voice to professional style using AI
+    const outputUrl = await transformVoiceAI(tempPath, detectedSinger);
+
+    // Step 3: Cleanup uploaded temp
+    fs.unlinkSync(tempPath);
+
+    return res.json({
       success: true,
-      message: "Voice transformed successfully!",
+      message: "Voice transformed successfully.",
       originalSong: songTitle,
       matchedSinger: detectedSinger,
-      transformedAudioUrl: outputPath,
+      transformedAudioUrl: outputUrl,
     });
-  } catch (err) {
-    console.error("Voice transform error:", err);
-    res.status(500).json({ success: false, message: "Voice transformation failed." });
-  } finally {
-    fs.unlinkSync(tempInputPath); // clean temp file
+  } catch (error) {
+    console.error("Voice transformation error:", error);
+    return res.status(500).json({ success: false, message: "Voice transformation failed." });
   }
 };
