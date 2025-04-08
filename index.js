@@ -1,5 +1,6 @@
 const express = require("express");
 const cors = require("cors");
+const path = require("path"); // Needed to serve static files
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -7,6 +8,9 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// Serve transformed audio output folder
+app.use("/outputs", express.static(path.join(__dirname, "public/outputs")));
 
 // Routes
 app.get("/", (req, res) => {
