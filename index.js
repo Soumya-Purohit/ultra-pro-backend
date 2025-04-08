@@ -19,6 +19,9 @@ app.use("/api/social", require("./routes/social.routes"));
 app.use("/api/yt", require("./routes/yt.routes")); // YouTube module (Option 2)
 app.use("/api/voice-transform", require("./routes/voice.routes"));
 app.use("/api/detect-song", require("./routes/songdetect.routes"));
+app.use("/api/m3u8", require("./routes/m3u8.routes")); // M3U8 to MP4
+app.use("/api/adult", require("./routes/adult.routes")); // Adult video extractor
+app.use("/api/movies", require("./routes/movie.routes")); // Movie sites extractor
 
 // Health check
 app.get("/", (req, res) => {
