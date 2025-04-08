@@ -1,14 +1,14 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const { getAllPosts, createPost, deletePost } = require('../controllers/social.controller');
+const {
+  getSocialVideo,
+  postSocialData,
+} = require("../controllers/social.controller");
 
-// Get all posts
-router.get('/posts', getAllPosts);
+// GET route for testing/extracting
+router.get("/extract", getSocialVideo);
 
-// Create a new post
-router.post('/posts', createPost);
-
-// Delete a post by ID
-router.delete('/posts/:id', deletePost);
+// POST route for posting content to extract
+router.post("/extract", postSocialData);
 
 module.exports = router;
